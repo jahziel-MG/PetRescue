@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>PetRescue | Adopta con amor</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/estilos.css') }}">
+</head>
+
+<body>
+
+    <header class="navbar">
+        <a href="/" class="logo">
+            <span>🐾</span> PetRescue
+        </a>
+
+        <nav>
+            <a href="#inicio">Inicio</a>
+            <a href="#animales">Animales</a>
+            <a href="#nosotros">Nosotros</a>
+        </nav>
+
+        <a href="#animales" class="btn-nav">
+            Adoptar
+        </a>
+    </header>
+
+    <main>
+        <section class="hero" id="inicio">
+            <div class="hero-content">
+                <span class="etiqueta">
+                    🐶 Cambiemos vidas juntos
+                </span>
+
+                <h1>
+                    Encuentra a tu nuevo
+                    <span>mejor amigo</span>
+                </h1>
+
+                <p>
+                    Cada animal merece un hogar lleno de amor.
+                    Conoce a nuestros rescatados y descubre
+                    a tu compañero ideal.
+                </p>
+
+                <a href="#animales" class="btn-principal">
+                    Conocer animales →
+                </a>
+            </div>
+
+            <div class="hero-image">
+                <span>🐕</span>
+                <span class="huella huella-1">🐾</span>
+                <span class="huella huella-2">🐾</span>
+            </div>
+        </section>
+
+        <section class="catalogo" id="animales">
+            <div class="titulo-seccion">
+                <span class="etiqueta">ENCUENTRA A TU COMPAÑERO</span>
+
+                <h2>Animales que buscan un hogar</h2>
+
+                <p>
+                    Ellos esperan una familia que les dé
+                    una segunda oportunidad.
+                </p>
+            </div>
+
+            <div id="contenedor-animales" class="grid-animales">
+                <p class="mensaje">Cargando animales...</p>
+            </div>
+        </section>
+
+        <section class="nosotros" id="nosotros">
+            <h2>Adoptar cambia dos vidas</h2>
+
+            <p>
+                Le das una nueva oportunidad a un animal
+                y recibes un compañero para toda la vida.
+            </p>
+        </section>
+    </main>
+
+    <footer>
+        <p>🐾 PetRescue © 2026</p>
+        <p>Un hogar, una nueva oportunidad.</p>
+    </footer>
+
+    <script>
+        async function cargarAnimales() {
+            const contenedor = document.getElementById(
+                "contenedor-animales"
+            );
+
+            try {
+                const respuesta = await fetch("/api/animales");
+
+                if (!respuesta.ok) {
+                    throw new Error("No se pudo cargar el catálogo");
+                }
+
+                const animales = await respuesta.json();
+
+                contenedor.innerHTML = "";
+
+                if (animales.length === 0) {
+                    contenedor.innerHTML =
+                        '<p class="mensaje">No hay animales disponibles.</p>';
+                    return;
+                }
+
+                animales.forEach(animal => {
+                    const tarjeta = document.createElement("article");
+                    tarjeta.className = "tarjeta";
+
+                    const imagen = document.createElement("img");
+                    imagen.className = "foto-animal";
+                    imagen.src = "/static/img/" + encodeURIComponent(animal.foto || "");
+                    imagen.alt = "Fotografía de " + animal.nombre;
+                    imagen.loading = "lazy";
+
+                    const imagenFallback = document.createElement("div");
+                    imagenFallback.className = "foto-fallback";
+                    imagenFallback.textContent =
+                        animal.especie.toLowerCase() === "gato" ? "🐱" : "🐶";
+
+                    imagen.addEventListener("error", () => {
+                        imagen.style.display = "none";
+                        imagenFallback.style.display = "grid";
+                    });
+
+                    const contenido = document.createElement("div");
+                    contenido.className = "tarjeta-contenido";
+
+                    const estado = document.createElement("span");
+                    estado.className = "estado";
+                    estado.textContent = "Disponible para adopción";
+
+                    const nombre = document.createElement("h3");
+                    nombre.textContent = animal.nombre;
+
+                    const detalles = document.createElement("p");
+                    detalles.className = "detalles";
+                    detalles.textContent =
+                        animal.especie + " · " +
+                        (animal.edad === null
+                            ? "Edad desconocida"
+                            : animal.edad + (animal.edad === 1
+                                ? " año"
+                                : " años"));
+
+                    const descripcion = document.createElement("p");
+                    descripcion.className = "descripcion";
+                    descripcion.textContent = animal.descripcion || "";
+
+                    const boton = document.createElement("button");
+                    boton.className = "btn-adoptar";
+                    boton.textContent = "Quiero adoptarlo";
+
+                    boton.addEventListener("click", () => {
+                        window.location.href =
+                            "/solicitud?id_animal=" + animal.id_animal;
+                    });
+
+                    contenido.append(
+                        estado,
+                        nombre,
+                        detalles,
+                        descripcion,
+                        boton
+                    );
+
+                    tarjeta.append(imagen, imagenFallback, contenido);
+                    contenedor.appendChild(tarjeta);
+                });
+
+            } catch (error) {
+                contenedor.innerHTML =
+                    '<p class="mensaje">No se pudo cargar el catálogo. ' +
+                    'Comprueba que el servidor esté funcionando.</p>';
+
+                console.error(error);
+            }
+        }
+
+        cargarAnimales();
+    </script>
+
+</body>
+</html>

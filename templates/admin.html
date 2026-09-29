@@ -1,0 +1,353 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel de administración | PetRescue</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #f3f7f4;
+            color: #26352e;
+        }
+
+        header {
+            background: #13845b;
+            color: white;
+            padding: 22px 6%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        header h1 {
+            font-size: 25px;
+        }
+
+        header p {
+            margin-top: 6px;
+            color: #e0f4e9;
+        }
+
+        .btn-salir {
+            background: white;
+            color: #13845b;
+            border: none;
+            padding: 11px 18px;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        main {
+            width: 92%;
+            max-width: 1250px;
+            margin: 30px auto;
+        }
+
+        .bienvenida {
+            margin-bottom: 25px;
+        }
+
+        .bienvenida h2 {
+            margin-bottom: 8px;
+        }
+
+        .resumen {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+            gap: 18px;
+            margin-bottom: 30px;
+        }
+
+        .tarjeta {
+            background: white;
+            padding: 22px;
+            border-radius: 12px;
+            box-shadow: 0 3px 12px #0000000a;
+            border-left: 5px solid #13845b;
+        }
+
+        .tarjeta p {
+            color: #68756e;
+            margin-bottom: 10px;
+        }
+
+        .tarjeta h3 {
+            font-size: 30px;
+            color: #13845b;
+        }
+
+        .panel {
+            background: white;
+            padding: 24px;
+            border-radius: 12px;
+            box-shadow: 0 3px 12px #0000000a;
+        }
+
+        .panel h2 {
+            margin-bottom: 8px;
+        }
+
+        .descripcion {
+            color: #68756e;
+            margin-bottom: 20px;
+        }
+
+        .tabla-contenedor {
+            width: 100%;
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 850px;
+        }
+
+        th, td {
+            padding: 13px;
+            text-align: left;
+            border-bottom: 1px solid #e6ece8;
+            vertical-align: top;
+        }
+
+        th {
+            background: #eaf5ee;
+            color: #176344;
+        }
+
+        td {
+            font-size: 14px;
+            overflow-wrap: anywhere;
+        }
+
+        .estado {
+            display: inline-block;
+            padding: 5px 9px;
+            border-radius: 20px;
+            background: #fff2d8;
+            color: #805500;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .mensaje {
+            padding: 15px;
+            background: #f1f5f2;
+            border-radius: 8px;
+            margin: 15px 0;
+        }
+
+        .error {
+            background: #fdeaea;
+            color: #a12626;
+        }
+
+        footer {
+            text-align: center;
+            padding: 25px;
+            color: #718078;
+        }
+
+        @media (max-width: 600px) {
+            header h1 {
+                font-size: 21px;
+            }
+
+            .panel {
+                padding: 15px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<header>
+    <div>
+        <h1>🐾 PetRescue</h1>
+        <p>Sistema de gestión de adopciones</p>
+    </div>
+
+    <form action="{{ url_for('logout') }}" method="POST">
+        <button class="btn-salir" type="submit">
+            Cerrar sesión
+        </button>
+    </form>
+</header>
+
+<main>
+    <section class="bienvenida">
+        <h2>Panel de administración</h2>
+        <p>
+            Bienvenido/a, {{ nombre or 'Administrador' }}.
+            Desde aquí puedes consultar las solicitudes de adopción.
+        </p>
+    </section>
+
+    <section class="resumen">
+        <div class="tarjeta">
+            <p>Total de solicitudes</p>
+            <h3 id="total">0</h3>
+        </div>
+
+        <div class="tarjeta">
+            <p>Solicitudes recibidas</p>
+            <h3 id="recibidas">0</h3>
+        </div>
+
+        <div class="tarjeta">
+            <p>Solicitudes aprobadas</p>
+            <h3 id="aprobadas">0</h3>
+        </div>
+    </section>
+
+    <section class="panel">
+        <h2>Solicitudes de adopción</h2>
+        <p class="descripcion">
+            Consulta la información enviada por las personas postulantes.
+        </p>
+
+        <div id="mensaje" class="mensaje">
+            Cargando solicitudes...
+        </div>
+
+        <div class="tabla-contenedor">
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Animal</th>
+                        <th>Postulante</th>
+                        <th>Correo</th>
+                        <th>Teléfono</th>
+                        <th>Estado</th>
+                        <th>Motivo</th>
+                    </tr>
+                </thead>
+                <tbody id="tabla-solicitudes"></tbody>
+            </table>
+        </div>
+    </section>
+</main>
+
+<footer>
+    PetRescue © 2026 — Sistema de gestión de adopciones
+</footer>
+
+<script>
+    const tabla = document.getElementById("tabla-solicitudes");
+    const mensaje = document.getElementById("mensaje");
+
+    function crearCelda(valor) {
+        const celda = document.createElement("td");
+        celda.textContent =
+            valor === null || valor === undefined || valor === ""
+                ? "—"
+                : valor;
+        return celda;
+    }
+
+    async function cargarSolicitudes() {
+        try {
+            const respuesta = await fetch("/api/solicitudes");
+
+            if (respuesta.status === 401 ||
+                respuesta.status === 403) {
+                mensaje.textContent =
+                    "Tu sesión no está autorizada. Inicia sesión nuevamente.";
+                mensaje.classList.add("error");
+                return;
+            }
+
+            if (!respuesta.ok) {
+                throw new Error("No se pudieron cargar las solicitudes.");
+            }
+
+            const datos = await respuesta.json();
+
+            // Admite una lista directa o un objeto con la propiedad solicitudes.
+            const solicitudes = Array.isArray(datos)
+                ? datos
+                : (datos.solicitudes || []);
+
+            document.getElementById("total").textContent =
+                solicitudes.length;
+
+            document.getElementById("recibidas").textContent =
+                solicitudes.filter(s =>
+                    String(s.estado || "").toUpperCase() === "RECIBIDA"
+                ).length;
+
+            document.getElementById("aprobadas").textContent =
+                solicitudes.filter(s =>
+                    String(s.estado || "").toUpperCase() === "APROBADA"
+                ).length;
+
+            tabla.replaceChildren();
+
+            if (solicitudes.length === 0) {
+                mensaje.textContent =
+                    "Todavía no hay solicitudes de adopción.";
+                return;
+            }
+
+            mensaje.hidden = true;
+
+            solicitudes.forEach(solicitud => {
+                const fila = document.createElement("tr");
+
+                fila.appendChild(crearCelda(
+                    solicitud.id_solicitud ?? solicitud.id
+                ));
+
+                fila.appendChild(crearCelda(
+                    solicitud.nombre_animal ??
+                    solicitud.animal ??
+                    solicitud.id_animal
+                ));
+
+                fila.appendChild(crearCelda(
+                    solicitud.nombre_postulante
+                ));
+
+                fila.appendChild(crearCelda(solicitud.correo));
+                fila.appendChild(crearCelda(solicitud.telefono));
+
+                const celdaEstado = document.createElement("td");
+                const etiqueta = document.createElement("span");
+                etiqueta.className = "estado";
+                etiqueta.textContent = solicitud.estado || "Sin estado";
+                celdaEstado.appendChild(etiqueta);
+                fila.appendChild(celdaEstado);
+
+                fila.appendChild(crearCelda(solicitud.motivo));
+
+                tabla.appendChild(fila);
+            });
+
+        } catch (error) {
+            mensaje.textContent =
+                "Error al cargar las solicitudes. " +
+                "Verifica el servidor y la ruta /api/solicitudes.";
+            mensaje.classList.add("error");
+            console.error(error);
+        }
+    }
+
+    cargarSolicitudes();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,294 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    font-family: Arial, Helvetica, sans-serif;
+    background: #f8faf7;
+    color: #24352b;
+}
+
+.navbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px 8%;
+    background: white;
+    box-shadow: 0 3px 15px #00000008;
+}
+
+.logo {
+    font-size: 25px;
+    font-weight: bold;
+    color: #218c60;
+    text-decoration: none;
+}
+
+.navbar nav {
+    display: flex;
+    gap: 30px;
+}
+
+.navbar nav a {
+    text-decoration: none;
+    color: #46534a;
+    font-size: 14px;
+}
+
+.navbar nav a:hover {
+    color: #218c60;
+}
+
+.btn-nav,
+.btn-principal {
+    display: inline-block;
+    background: #218c60;
+    color: white;
+    text-decoration: none;
+    padding: 13px 22px;
+    border-radius: 10px;
+    font-weight: bold;
+}
+
+.btn-nav:hover,
+.btn-principal:hover,
+.btn-adoptar:hover {
+    background: #176b48;
+}
+
+.hero {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 40px;
+    padding: 90px 10%;
+    background: #eaf5ec;
+}
+
+.hero-content {
+    max-width: 560px;
+}
+
+.etiqueta {
+    display: inline-block;
+    color: #218c60;
+    font-size: 12px;
+    font-weight: bold;
+    letter-spacing: 1px;
+    margin-bottom: 20px;
+}
+
+.hero h1 {
+    font-size: clamp(36px, 5vw, 58px);
+    line-height: 1.12;
+    margin-bottom: 22px;
+}
+
+.hero h1 span {
+    color: #218c60;
+}
+
+.hero p {
+    color: #68756b;
+    line-height: 1.8;
+    margin-bottom: 30px;
+}
+
+.hero-image {
+    display: grid;
+    place-items: center;
+    position: relative;
+    width: 300px;
+    height: 300px;
+    flex-shrink: 0;
+    background: #d2ead6;
+    border-radius: 50%;
+}
+
+.hero-image > span:first-child {
+    font-size: 150px;
+}
+
+.huella {
+    position: absolute;
+    font-size: 35px;
+}
+
+.huella-1 {
+    top: 15px;
+    right: 25px;
+}
+
+.huella-2 {
+    bottom: 20px;
+    left: 15px;
+}
+
+.catalogo {
+    padding: 85px 8%;
+}
+
+.titulo-seccion {
+    text-align: center;
+    margin-bottom: 45px;
+}
+
+.titulo-seccion h2,
+.nosotros h2 {
+    font-size: clamp(27px, 4vw, 36px);
+    margin-bottom: 15px;
+}
+
+.titulo-seccion p,
+.nosotros p {
+    color: #718076;
+    line-height: 1.7;
+}
+
+.grid-animales {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 25px;
+}
+
+.tarjeta {
+    overflow: hidden;
+    background: white;
+    border-radius: 18px;
+    box-shadow: 0 8px 30px #1c422012;
+    transition: transform 0.2s;
+}
+
+.tarjeta:hover {
+    transform: translateY(-5px);
+}
+
+.foto-animal,
+.foto-fallback {
+    width: 100%;
+    height: 220px;
+    object-fit: cover;
+    background: #e5f1e7;
+}
+
+.foto-fallback {
+    display: none;
+    place-items: center;
+    font-size: 90px;
+}
+
+.tarjeta-contenido {
+    padding: 24px;
+}
+
+.estado {
+    display: inline-block;
+    color: #218c60;
+    background: #e5f5e9;
+    padding: 7px 10px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: bold;
+}
+
+.tarjeta h3 {
+    margin-top: 16px;
+    margin-bottom: 8px;
+    font-size: 23px;
+}
+
+.detalles {
+    color: #218c60;
+    font-size: 14px;
+    margin-bottom: 14px;
+}
+
+.descripcion {
+    color: #718076;
+    font-size: 14px;
+    line-height: 1.7;
+    min-height: 48px;
+}
+
+.btn-adoptar {
+    width: 100%;
+    margin-top: 20px;
+    padding: 13px;
+    border: none;
+    border-radius: 9px;
+    background: #218c60;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.nosotros {
+    text-align: center;
+    padding: 65px 10%;
+    background: #eaf5ec;
+}
+
+footer {
+    padding: 25px;
+    text-align: center;
+    background: #203b2c;
+    color: white;
+    font-size: 13px;
+    line-height: 2;
+}
+
+.mensaje {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 30px;
+    color: #718076;
+}
+
+@media (max-width: 800px) {
+    .navbar {
+        flex-wrap: wrap;
+        gap: 18px;
+    }
+
+    .navbar nav {
+        order: 3;
+        width: 100%;
+        justify-content: center;
+        gap: 18px;
+    }
+
+    .hero {
+        flex-direction: column;
+        text-align: center;
+        padding: 60px 7%;
+    }
+
+    .hero-image {
+        width: 230px;
+        height: 230px;
+    }
+
+    .hero-image > span:first-child {
+        font-size: 115px;
+    }
+
+    .grid-animales {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 520px) {
+    .grid-animales {
+        grid-template-columns: 1fr;
+    }
+
+    .catalogo {
+        padding: 60px 6%;
+    }
+}
